@@ -8,14 +8,16 @@ import com.azure.messaging.eventhubs.CheckpointStore;
 import com.azure.messaging.eventhubs.EventProcessorClient;
 import com.azure.messaging.eventhubs.EventProcessorClientBuilder;
 import com.azure.messaging.eventhubs.models.EventPosition;
-import com.example.ehreplication.immutableconfig.ConsumerConfig;
+import com.example.ehreplication.config.immutableconfig.ConsumerConfig;
 import com.example.ehreplication.impl.PartitionClose;
 import com.example.ehreplication.impl.ProcessEvent;
 import com.example.ehreplication.impl.ProcessPartitionInitialization;
 import com.example.ehreplication.impl.ProcessError;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 public class EHConsumerConfig {
 
@@ -64,6 +66,10 @@ public class EHConsumerConfig {
                                                         final ProcessError processError,
                                                         final PartitionClose partitionClose,
                                                         final CheckpointStore checkpointStore) {
+
+        log.info("--- EventHub Consumer Configuration ---");
+        log.info(consumerConfig.toString());
+        log.info("---------------------------------------");
 
         return new EventProcessorClientBuilder()
                 .connectionString(consumerConfig.getConnectionString())
