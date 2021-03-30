@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EHProducerConfig {
 
-    @Bean
+    @Bean(destroyMethod = "stop")
     public EventHubProducerClient getEventHubProducerClient(final ProducerConfig producerConfig) {
 
         log.info("--- EventHub Producer Configuration ---");
@@ -26,7 +26,7 @@ public class EHProducerConfig {
     }
 
 
-    @Bean
+    @Bean(destroyMethod = "stop")
     public EventHubProducerAsyncClient getEventHubProducerAsyncClient(final ProducerConfig producerConfig) {
 
         log.info("--- EventHub Producer Configuration ---");
