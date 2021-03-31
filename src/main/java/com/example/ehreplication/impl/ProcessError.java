@@ -6,20 +6,14 @@ import com.azure.messaging.eventhubs.models.ErrorContext;
 import com.example.ehreplication.metrics.ConsumerMetrics;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Configuration
+@Service
 @AllArgsConstructor
 public class ProcessError implements Consumer<ErrorContext> {
 
     private final ConsumerMetrics consumerMetrics;
-
-    @Bean
-    public ProcessError getProcessError(final ConsumerMetrics consumerMetrics) {
-        return new ProcessError(consumerMetrics);
-    }
 
     @Override
     public void accept(ErrorContext errorContext) {
