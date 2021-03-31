@@ -46,6 +46,7 @@ public class ProcessEvent implements Consumer<EventContext> {
 
         consumerMetrics.markEvents(partitionId);
         consumerMetrics.updateLag(partitionId, lag);
+        consumerMetrics.updateMessageTimestamp(partitionId, eventContext.getEventData().getEnqueuedTime().toEpochMilli());
 
         if (!eventDataBatchThreadLocal.get().tryAdd(eventContext.getEventData())) {
 
