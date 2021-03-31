@@ -51,8 +51,11 @@ public class ProcessEvent implements Consumer<EventContext> {
     public void accept(EventContext eventContext) {
 
         final String partitionId = eventContext.getPartitionContext().getPartitionId();
+        final long lag = eventContext.getLastEnqueuedEventProperties().getSequenceNumber()
+                - eventContext.getEventData().getSequenceNumber();
 
         consumerMetrics.markEvents(partitionId);
+        consumerMetrics.updateLag(partitionId, lag);
 
         if (!eventDataBatchThreadLocal.get().tryAdd(eventContext.getEventData())) {
 
