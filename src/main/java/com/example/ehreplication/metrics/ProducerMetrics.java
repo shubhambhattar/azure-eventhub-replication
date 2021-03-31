@@ -13,9 +13,9 @@ public class ProducerMetrics {
     private final Counter producedEvents, msgTooBigError;
 
     public ProducerMetrics(final MeterRegistry meterRegistry) {
-        producedEvents = meterRegistry.counter("producer.events");
-        eventsSize = meterRegistry.gauge("producer.eventsSize", new AtomicInteger(0));
-        msgTooBigError = meterRegistry.counter("producer.msgTooBigError");
+        producedEvents = meterRegistry.counter("producer_events");
+        eventsSize = meterRegistry.gauge("producer_events_size", new AtomicInteger(0));
+        msgTooBigError = meterRegistry.counter("producer_msg_too_big_error");
     }
 
     public void markEvents(final int count) {

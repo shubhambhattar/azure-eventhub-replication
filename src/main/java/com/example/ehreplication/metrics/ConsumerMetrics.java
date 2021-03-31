@@ -14,10 +14,12 @@ public class ConsumerMetrics {
 
     private final MeterRegistry meterRegistry;
     private final Map<String, AtomicLong> lags;
+    private final Map<String, AtomicLong> messageTimestamp;
 
     public ConsumerMetrics(final MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
         lags = new HashMap<>();
+        messageTimestamp = new HashMap<>();
     }
 
     @Bean
@@ -29,8 +31,8 @@ public class ConsumerMetrics {
 
         meterRegistry
                 .counter(
-                        "consumer.processEvent",
-                        Tags.of("partitionId", partitionId)
+                        "consumer_process_event",
+                        Tags.of("partition", partitionId)
                 ).increment();
     }
 
@@ -38,8 +40,8 @@ public class ConsumerMetrics {
 
         meterRegistry
                 .counter(
-                        "consumer.partitionInitialization",
-                        Tags.of("partitionId", partitionId)
+                        "consumer_partition_initialization",
+                        Tags.of("partition", partitionId)
                 ).increment();
     }
 
@@ -47,8 +49,8 @@ public class ConsumerMetrics {
 
         meterRegistry
                 .counter(
-                        "consumer.processError",
-                        Tags.of("partitionId", partitionId)
+                        "consumer_process_error",
+                        Tags.of("partition", partitionId)
                 ).increment();
     }
 
@@ -56,8 +58,8 @@ public class ConsumerMetrics {
 
         meterRegistry
                 .counter(
-                        "consumer.partitionClose",
-                        Tags.of("partitionId", partitionId)
+                        "consumer_partition_close",
+                        Tags.of("partition", partitionId)
                 ).increment();
     }
 
@@ -69,9 +71,25 @@ public class ConsumerMetrics {
             lags.put(
                     partitionId,
                     meterRegistry.gauge(
-                            "consumer.lag",
-                            Tags.of("partitionId", partitionId),
+                            "consumer_lag",
+                            Tags.of("partition", partitionId),
                             new AtomicLong(lag)
+                    )
+            );
+        }
+    }
+
+    public void updateMessageTimestamp(final String partitionId, final long timestamp) {
+
+        if (messageTimestamp.containsKey(partitionId)) {
+            messageTimestamp.get(partitionId).set(timestamp);
+        } else {
+            messageTimestamp.put(
+                    partitionId,
+                    meterRegistry.gauge(
+                            "consumer_message_timestamp",
+                            Tags.of("partition", partitionId),
+                            new AtomicLong(timestamp)
                     )
             );
         }
