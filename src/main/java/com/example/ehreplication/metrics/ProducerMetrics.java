@@ -1,33 +1,32 @@
 package com.example.ehreplication.metrics;
 
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
-import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Configuration
-@AllArgsConstructor
 public class ProducerMetrics {
 
-    private final MeterRegistry meterRegistry;
+    private final AtomicInteger eventsSize;
+    private final Counter producedEvents, msgTooBigError;
 
-    @Bean
-    public ProducerMetrics getProducerMetrics(final MeterRegistry meterRegistry) {
-        return new ProducerMetrics(meterRegistry);
+    public ProducerMetrics(final MeterRegistry meterRegistry) {
+        producedEvents = meterRegistry.counter("producer.events");
+        eventsSize = meterRegistry.gauge("producer.eventsSize", new AtomicInteger(0));
+        msgTooBigError = meterRegistry.counter("producer.msgTooBigError");
     }
 
     public void markEvents(final int count) {
-
-        meterRegistry.counter("producer.events").increment(count);
+        producedEvents.increment(count);
     }
 
     public void markEventsSize(final int size) {
-
-        meterRegistry.counter("producer.eventsSize").increment(size);
+        eventsSize.set(size);
     }
 
     public void markMessageTooBig() {
-
-        meterRegistry.counter("producer.msgTooBigError").increment();
+        msgTooBigError.increment();
     }
 }
