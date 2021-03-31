@@ -9,11 +9,10 @@ import com.azure.messaging.eventhubs.models.EventContext;
 import com.example.ehreplication.metrics.ConsumerMetrics;
 import com.example.ehreplication.metrics.ProducerMetrics;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Configuration
+@Service
 public class ProcessEvent implements Consumer<EventContext> {
 
     private final EventHubProducerClient eventHubProducerClient;
@@ -36,15 +35,6 @@ public class ProcessEvent implements Consumer<EventContext> {
         this.eventDataBatchThreadLocal = ThreadLocal.withInitial(
                 () -> eventHubProducerClient.createBatch(createBatchOptions)
         );
-    }
-
-    @Bean
-    public ProcessEvent getProcessEvent(final EventHubProducerClient eventHubProducerClient,
-                                        final CreateBatchOptions createBatchOptions,
-                                        final ConsumerMetrics consumerMetrics,
-                                        final ProducerMetrics producerMetrics) {
-
-        return new ProcessEvent(eventHubProducerClient, createBatchOptions, consumerMetrics, producerMetrics);
     }
 
     @Override

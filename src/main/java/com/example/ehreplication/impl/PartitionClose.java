@@ -6,20 +6,14 @@ import com.azure.messaging.eventhubs.models.CloseContext;
 import com.example.ehreplication.metrics.ConsumerMetrics;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Configuration
+@Service
 @AllArgsConstructor
 public class PartitionClose implements Consumer<CloseContext> {
 
     private final ConsumerMetrics consumerMetrics;
-
-    @Bean
-    public PartitionClose getPartitionClose(final ConsumerMetrics consumerMetrics) {
-        return new PartitionClose(consumerMetrics);
-    }
 
     @Override
     public void accept(CloseContext closeContext) {

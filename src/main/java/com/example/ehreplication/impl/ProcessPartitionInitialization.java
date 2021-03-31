@@ -6,21 +6,14 @@ import com.azure.messaging.eventhubs.models.InitializationContext;
 import com.example.ehreplication.metrics.ConsumerMetrics;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Configuration
+@Service
 @AllArgsConstructor
 public class ProcessPartitionInitialization implements Consumer<InitializationContext> {
 
     private final ConsumerMetrics consumerMetrics;
-
-    @Bean
-    public ProcessPartitionInitialization getPartitionInitialization(final ConsumerMetrics consumerMetrics) {
-        return new ProcessPartitionInitialization(consumerMetrics);
-    }
-
 
     @Override
     public void accept(InitializationContext initializationContext) {
