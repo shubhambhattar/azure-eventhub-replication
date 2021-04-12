@@ -5,8 +5,8 @@ import io.micrometer.core.instrument.Tags;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Configuration
@@ -18,8 +18,8 @@ public class ConsumerMetrics {
 
     public ConsumerMetrics(final MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
-        lags = new HashMap<>();
-        messageTimestamp = new HashMap<>();
+        lags = new ConcurrentHashMap<>();
+        messageTimestamp = new ConcurrentHashMap<>();
     }
 
     @Bean
@@ -65,33 +65,21 @@ public class ConsumerMetrics {
 
     public void updateLag(final String partitionId, final long lag) {
 
-        if (lags.containsKey(partitionId)) {
-            lags.get(partitionId).set(lag);
-        } else {
-            lags.put(
-                    partitionId,
-                    meterRegistry.gauge(
-                            "consumer_lag",
-                            Tags.of("partition", partitionId),
-                            new AtomicLong(lag)
-                    )
-            );
-        }
+        lags.computeIfAbsent(
+            partitionId,
+            unused -> meterRegistry.gauge("consumer_lag", Tags.of("partition", partitionId), new AtomicLong(lag))
+        ).set(lag);
     }
 
     public void updateMessageTimestamp(final String partitionId, final long timestamp) {
 
-        if (messageTimestamp.containsKey(partitionId)) {
-            messageTimestamp.get(partitionId).set(timestamp);
-        } else {
-            messageTimestamp.put(
-                    partitionId,
-                    meterRegistry.gauge(
-                            "consumer_message_timestamp",
-                            Tags.of("partition", partitionId),
-                            new AtomicLong(timestamp)
-                    )
-            );
-        }
+        messageTimestamp.computeIfAbsent(
+                partitionId,
+                unused -> meterRegistry.gauge(
+                        "consumer_message_timestamp", 
+                        Tags.of("partition", partitionId),
+                        new AtomicLong(timestamp)
+                )
+        ).set(timestamp);
     }
 }
